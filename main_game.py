@@ -36,5 +36,4 @@ def main():
     window = GameMU(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     arcade.run()
 
-
 main()

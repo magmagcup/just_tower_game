@@ -134,5 +134,3 @@ class Attack(Model):
             self.center_y = y
 
         self.set_texture(faceing)
-
-
