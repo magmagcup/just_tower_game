@@ -49,7 +49,7 @@ class Enemy(Model):
             self.set_texture(self.LEFT)
             self.facing_status = self.LEFT
 
-        if self.change_x > 0:
+        elif self.change_x > 0:
             self.set_texture(self.RIGHT)
             self.facing_status = self.RIGHT
 
@@ -109,7 +109,7 @@ class Player(Model):
             self.set_texture(self.LEFT_move)
             self.facing_status = self.LEFT
 
-        if self.change_x > 0:
+        elif self.change_x > 0:
             self.set_texture(self.RIGHT_move)
             self.facing_status = self.RIGHT
 
