@@ -47,4 +47,3 @@ class Map:
     def map_component(self):
         arcade.draw_rectangle_filled(SCREEN_WIDTH / 2, SCREEN_HEIGHT//12, SCREEN_WIDTH, 2, arcade.color.GRAY)
         self.wall_list.draw()
-

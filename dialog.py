@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import arcade
 from random import randint
 from time import time
@@ -83,6 +84,9 @@ class Dialog(arcade.Sprite):
     def on_key_press(self,key,modifier):
         if key == arcade.key.ENTER:
             self.num_context += 1
+
+        if key == arcade.key.X:
+            self.num_context = len(self.context)
 
     def on_draw(self,status):
         if self.context is not None and status:

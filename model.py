@@ -43,15 +43,13 @@ class Enemy(Model):
         self.change_x = -randint(1,3)
         self.set_texture(self.LEFT)
 
-    def update(self):
-        self.center_x += self.change_x
-        self.center_y += self.change_y
+    def boarder(self):
 
         if self.change_x < 0:
             self.set_texture(self.LEFT)
             self.facing_status = self.LEFT
 
-        if self.change_x > 0:
+        elif self.change_x > 0:
             self.set_texture(self.RIGHT)
             self.facing_status = self.RIGHT
 
@@ -68,6 +66,12 @@ class Enemy(Model):
         #Constant
         if self.center_y <= 35:
             self.center_y = 60
+
+
+    def update(self):
+        self.center_x += self.change_x
+        self.center_y += self.change_y
+
 
 
 class Player(Model):
@@ -105,7 +109,7 @@ class Player(Model):
             self.set_texture(self.LEFT_move)
             self.facing_status = self.LEFT
 
-        if self.change_x > 0:
+        elif self.change_x > 0:
             self.set_texture(self.RIGHT_move)
             self.facing_status = self.RIGHT
 
@@ -113,11 +117,6 @@ class Player(Model):
             self.left = 0
         elif self.right > SCREEN_WIDTH - 1:
             self.right = SCREEN_WIDTH - 1
-
-        # if self.center_y <= 0:
-        #     self.center_y = 0
-        # elif self.top > SCREEN_HEIGHT - 1:
-        #     self.top = SCREEN_HEIGHT - 1
 
 
 class Attack(Model):
@@ -135,9 +134,3 @@ class Attack(Model):
             self.center_y = y
 
         self.set_texture(faceing)
-
-
-class Potato(arcade.PhysicsEnginePlatformer):
-    def __init__(self,t,obj):
-        super().__init__(t,obj)
-

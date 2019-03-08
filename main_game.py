@@ -1,7 +1,8 @@
+<<<<<<< HEAD
 import arcade
 from time import time
 from random import randint
-from GAMEMU.just_tower_game.World import World
+from World import World
 
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 600
@@ -14,10 +15,9 @@ JUMP_HEIGHT = 60
 point_y = 75
 point_x = 50
 
-
 class GameMU(arcade.Window):
     def __init__(self,width,height,title):
-        super().__init__(width,height,title)
+        super().__init__(width,height,title,resizable=True)
         # arcade.set_background_color(arcade.color.BLACK)
         self.world = World(width,height)
 

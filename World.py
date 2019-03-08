@@ -1,10 +1,11 @@
+<<<<<<< HEAD
 import arcade
 from time import time
 from random import randint,choice
-from GAMEMU.just_tower_game.model import Player,Enemy
-from GAMEMU.just_tower_game.map import Map
-from GAMEMU.just_tower_game.dialog import Dialog
-from GAMEMU.just_tower_game.physic import Physic
+from model import Player,Enemy
+from map import Map
+from dialog import Dialog
+from physic import Physic
 
 SCALE = 1
 SPRITE_SPEED = 2
@@ -57,6 +58,11 @@ class World:
         #Shop
         self.attack_delay = 0.5
 
+        #ZA WADORU
+        self.time_stop = False
+        self.check_stop = False
+
+
 
     def setup(self):
         # For Player
@@ -78,6 +84,10 @@ class World:
         self.player.life_time = time()
         self.hurt_time = time()
 
+        #time stop
+        self.time_stop = False
+        self.check_stop = False
+
         # Status
         self.hurt_status = False
 
@@ -90,13 +100,16 @@ class World:
         arcade.start_render()
         if self.page_number == 0:
             arcade.draw_circle_filled(50, 50, 500, arcade.color.WHITE)
-            arcade.set_background_color(arcade.color.BAKER_MILLER_PINK)
+            arcade.set_background_color(arcade.color.GRAY)
             if time() - self.time_check >= 1:
                 self.motion = randint(0, 2)
                 self.time_check = time()
             self.pic[self.motion].draw()
             arcade.draw_text('Press ENTER to start the game', 0, 100, arcade.color.AMETHYST, width=600,
                                  font_size=35)
+
+        elif self.page_number == -1:
+            pass
 
         elif self.page_number == 1:
             self.player.draw()
@@ -123,17 +136,23 @@ class World:
         # Pretty long code
         if self.page_number == 1:
             #Dialog that will appear in the game
-            check = self.dialog.time_check(self.level)
-            if check is True:
-                self.dialog_status = check
+            # check = self.dialog.time_check(self.level)
+            # if check is True:
+            #     self.dialog_status = check
 
             if not self.dialog_status:
                 self.player.update()
                 self.jumping()
                 self.physic.update()
-                self.enemy_type.update()
+                if not self.time_stop:
+                    self.enemy_type.update()
+                self.check_boarder(self.enemy_type)
                 self.check_die()
 
+    @staticmethod
+    def check_boarder(wat_want):
+        for i in wat_want:
+            i.boarder()
 
     def check_die(self):
         kill_list = None
@@ -142,6 +161,8 @@ class World:
         if kill_list:
             for enemy in kill_list:
                 enemy.kill()
+                self.time_stop = False
+                self.check_stop = True
             if len(self.enemy_type) == 0:
                 self.level += 1
                 self.setup()
@@ -174,7 +195,6 @@ class World:
 
     def on_key_press(self, symbol: int, modifiers: int):
         if self.dialog_status:
-            if symbol == arcade.key.ENTER:
                 self.dialog.on_key_press(symbol,modifiers)
                 self.dialog_status = self.dialog.check()
                 if not self.dialog_status:
@@ -201,6 +221,10 @@ class World:
             if symbol == arcade.key.UP:
                 if self.physic.physic_player.can_jump():
                     self.player.change_y = JUMP_SPEED
+
+            if symbol == arcade.key.Z:
+                if not self.check_stop:
+                    self.time_stop = True
 
             if symbol == arcade.key.LEFT:
                 self.player.change_x = -SPRITE_SPEED
