@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import arcade
 from random import randint
 from time import time
