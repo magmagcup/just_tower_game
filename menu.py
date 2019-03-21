@@ -1,3 +1,3 @@
 class Menu:
-    def __init__(self,money):
+    def __init__(self):
         pass

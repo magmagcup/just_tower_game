@@ -14,6 +14,7 @@ JUMP_HEIGHT = 60
 point_y = 75
 point_x = 50
 
+
 class World:
     def __init__(self,x,y):
         self.width = x
@@ -198,6 +199,10 @@ class World:
                 self.dialog_status = self.dialog.check()
                 if not self.dialog_status:
                     self.page_number = 1
+
+        elif self.page_number == -1:
+            if symbol == arcade.key.ENTER:
+                pass
 
         elif self.page_number == 0:
             if symbol == arcade.key.ENTER:
