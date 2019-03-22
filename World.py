@@ -135,10 +135,10 @@ class World:
 
         # Pretty long code
         if self.page_number == 1:
-            #Dialog that will appear in the game
-            # check = self.dialog.time_check(self.level)
-            # if check is True:
-            #     self.dialog_status = check
+            # Dialog that will appear in the game
+            check = self.dialog.time_check(self.level)
+            if check is True:
+                self.dialog_status = check
 
             if not self.dialog_status:
                 self.player.update()
