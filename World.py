@@ -5,6 +5,7 @@ from model import Player,Enemy
 from map import Map
 from dialog import Dialog
 from physic import Physic
+from menu import Menu
 
 SCALE = 1
 SPRITE_SPEED = 2
@@ -41,7 +42,7 @@ class World:
         # Game level
         self.map = None
 
-        self.level = 1
+        self.level = 10
         #Physic engine
         self.physic = None
 
@@ -51,26 +52,37 @@ class World:
         self.dialog_status = False
         self.skip_t = False
 
+        #Menu
+        self.menu = Menu(self.width,self.height)
+
         # Hurt
         self.hurt_status = False
         self.hurt_time = time()
 
-        #Shop
-        self.attack_delay = 0.5
 
         #ZA WADORU
         self.time_stop = False
         self.check_stop = False
 
+    def setup_menu(self):
+        self.menu = Menu(self.width,self.height)
+
 
 
     def setup(self):
+
+        #For shop
+
         # For Player
-        self.player = Player("pics/character/pixel.png",'pics/character/pixel2.png', SCALE, point_x, point_y, 'pics/attack/fire.png',self.attack_delay)
+        self.player = Player("pics/character/pixel.png",'pics/character/pixel2.png', SCALE, point_x, point_y,
+                             'pics/attack/fire.png',self.menu.attack_delay,self.menu.health)
 
         # For Enemy
         self.enemy_type = arcade.SpriteList()
-        for monster in range(self.level):
+
+        enemy_num = self.num_enemy(self.level)
+
+        for monster in range(enemy_num):
             slime = Enemy('pics/enemy/enemy.png','pics/enemy/enemy2.png', SCALE, randint(self.width // 2, self.width - 50), point_y)
             self.enemy_type.append(slime)
 
@@ -95,6 +107,12 @@ class World:
         self.physic = Physic()
         self.physic.add_physic(self.player,self.enemy_type,self.wall)
 
+    @staticmethod
+    def num_enemy(num):
+        new_num = (num % 10)
+        if num / 10 >= 1 and num //10 == 0:
+            new_num += 1
+        return new_num
 
     def on_draw(self):
         arcade.start_render()
@@ -109,7 +127,7 @@ class World:
                                  font_size=35)
 
         elif self.page_number == -1:
-            pass
+            self.menu.draw(self.dialog_status)
 
         elif self.page_number == 1:
             self.player.draw()
@@ -118,7 +136,7 @@ class World:
             self.map.map_component()
             arcade.draw_text(f'The current level is {self.level}', self.width - 200, self.height - 100,
                                  arcade.color.WHITE)
-            arcade.draw_text(f'Current life {Player.LIFE}', 100, self.height - 100,arcade.color.WHITE)
+            arcade.draw_text(f'Current life {self.player.life}', 100, self.height - 100,arcade.color.WHITE)
             if self.hurt_status:
                 arcade.draw_rectangle_outline(self.width//2,self.height//2,self.width,self.height,arcade.color.RED,10)
                 if time() - self.hurt_time >= 1.5:
@@ -149,6 +167,7 @@ class World:
                 self.check_boarder(self.enemy_type)
                 self.check_die()
 
+
     @staticmethod
     def check_boarder(wat_want):
         for i in wat_want:
@@ -165,25 +184,31 @@ class World:
                 self.check_stop = True
             if len(self.enemy_type) == 0:
                 self.level += 1
-                self.setup()
+                if self.level % 10 == 0:
+                    self.page_number = -1
+                    self.menu.finish_shop = False
+                    return
+                else:
+                    self.setup()
             self.physic.add_physic(self.player, self.enemy_type, self.wall)
         status = arcade.check_for_collision_with_list(self.player, self.enemy_type)
 
         if status:
             if time() - self.player.life_time >= 2:
-                Player.LIFE -= 1
+                self.player.life -= 1
+                self.menu.health -= 1
                 self.hurt_status = True
                 self.hurt_time = time()
                 self.player.life_time = time()
 
-        if Player.LIFE == 0:
+        if self.player.life == 0:
             self.page_number = choice([0, 3])
             # self.page_number = 3
             if self.page_number == 3:
                 self.dialog_status = self.dialog.b_page(self.page_number)
             self.level = 1
-            Player.LIFE = 3
             self.skip_t = True
+            self.setup_menu()
             self.setup()
 
     def jumping(self):
@@ -197,24 +222,23 @@ class World:
         if self.dialog_status:
                 self.dialog.on_key_press(symbol,modifiers)
                 self.dialog_status = self.dialog.check()
-                if not self.dialog_status:
+                if not self.dialog_status and self.page_number != -1:
                     self.page_number = 1
 
         elif self.page_number == -1:
-            if symbol == arcade.key.ENTER:
-                pass
+            self.menu.on_key_press(symbol)
+            if self.menu.finish_shop:
+                self.page_number = 1
+                self.setup()
 
         elif self.page_number == 0:
             if symbol == arcade.key.ENTER:
                 if not self.skip_t:
                     self.dialog_status = True
                     self.skip_t = True
-                self.page_number = 1
+                self.page_number = -1
+                self.setup_menu()
                 arcade.set_background_color(arcade.color.BLACK)
-                self.setup()
-
-            elif symbol == arcade.key.ESCAPE:
-                arcade.close_window()
 
         elif self.page_number == 1:
             if symbol == arcade.key.X:
@@ -236,8 +260,12 @@ class World:
             elif symbol == arcade.key.RIGHT:
                 self.player.change_x = SPRITE_SPEED
 
+        if symbol == arcade.key.ESCAPE:
+            arcade.close_window()
+
     def on_key_release(self, key, modifiers):
         # if key == arcade.key.UP:
         #     self.player.change_y = 0
-        if key == arcade.key.LEFT or key == arcade.key.RIGHT:
-            self.player.change_x = 0
+        if self.page_number == 1:
+            if key == arcade.key.LEFT or key == arcade.key.RIGHT:
+                self.player.change_x = 0

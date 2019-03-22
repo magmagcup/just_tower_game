@@ -75,8 +75,7 @@ class Enemy(Model):
 
 
 class Player(Model):
-    LIFE = 3
-    def __init__(self, filename,filename2, scale,pointx,pointy,attack,attack_delay_speed):
+    def __init__(self, filename,filename2, scale,pointx,pointy,attack,attack_delay_speed,life):
         super().__init__(filename,filename2,scale,pointx,pointy)
         # For checking
         self.facing_status = self.RIGHT
@@ -90,6 +89,9 @@ class Player(Model):
         self.life_time = time()
         #Attack_delay
         self.attack_delay = attack_delay_speed
+
+        #life
+        self.life = life
 
 
     def attack(self,time_check):
