@@ -136,3 +136,15 @@ class Attack(Model):
             self.center_y = y
 
         self.set_texture(faceing)
+
+
+class Shield(Model):
+    def __init__(self,filename, scale, pointx, pointy):
+        super().__init__(filename,filename, scale=scale, pointx= pointx, pointy=pointy)
+
+    def check_side(self,player_x,player_y):
+        if self.center_x < player_x:
+            self.set_texture(0)
+        else:
+            self.set_texture(2)
+

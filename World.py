@@ -1,7 +1,7 @@
 import arcade
 from time import time
 from random import randint,choice
-from model import Player,Enemy
+from model import Player,Enemy,Shield
 from map import Map
 from dialog import Dialog
 from physic import Physic
@@ -30,7 +30,8 @@ class World:
         self.page_number = 0
         # For Character pic
         self.motion = 0
-        self.pic = [arcade.Sprite('pics/menu/menu1.png'), arcade.Sprite('pics/menu/menu2.png'), arcade.Sprite('pics/menu/menu3.png')]
+        self.pic = [arcade.load_texture('pics/menu/menu1.png'), arcade.load_texture('pics/menu/menu2.png',),
+                    arcade.load_texture('pics/menu/menu3.png')]
         # For menu pic
         for each_pic in self.pic:
             each_pic.center_x = self.width // 2
@@ -63,6 +64,10 @@ class World:
         #ZA WADORU
         self.time_stop = False
         self.check_stop = False
+
+
+        #Shield
+        self.shield = Shield('pics/attack/slash.png',0.1,0,0)
 
     def setup_menu(self):
         self.menu = Menu(self.width,self.height)
@@ -122,8 +127,9 @@ class World:
             if time() - self.time_check >= 1:
                 self.motion = randint(0, 2)
                 self.time_check = time()
-            self.pic[self.motion].draw()
-            arcade.draw_text('Press ENTER to start the game', 0, 100, arcade.color.AMETHYST, width=600,
+            arcade.draw_texture_rectangle(self.pic[self.motion].center_x,self.pic[self.motion].center_y,
+                                          texture=self.pic[self.motion],height=600,width=800)
+            arcade.draw_text('Press ENTER to start the game', 0, 100, arcade.color.AMETHYST, width=self.width,
                                  font_size=35)
 
         elif self.page_number == -1:
@@ -137,6 +143,7 @@ class World:
             arcade.draw_text(f'The current level is {self.level}', self.width - 200, self.height - 100,
                                  arcade.color.WHITE)
             arcade.draw_text(f'Current life {self.player.life}', 100, self.height - 100,arcade.color.WHITE)
+            self.shield.draw()
             if self.hurt_status:
                 arcade.draw_rectangle_outline(self.width//2,self.height//2,self.width,self.height,arcade.color.RED,10)
                 if time() - self.hurt_time >= 1.5:
@@ -161,6 +168,8 @@ class World:
             if not self.dialog_status:
                 self.player.update()
                 self.jumping()
+                self.shield.check_side(self.player.center_x,self.player.center_y)
+                self.deflect()
                 self.physic.update()
                 if not self.time_stop:
                     self.enemy_type.update()
@@ -168,10 +177,19 @@ class World:
                 self.check_die()
 
 
+
     @staticmethod
     def check_boarder(wat_want):
         for i in wat_want:
             i.boarder()
+
+    def deflect(self):
+        defect_list = arcade.check_for_collision_with_list(self.shield,self.enemy_type)
+        for i in defect_list:
+            i.center_x += self.shield.width//2
+            i.change_x = -i.change_x
+            i.change_y = -i.change_y
+
 
     def check_die(self):
         kill_list = None
@@ -262,6 +280,11 @@ class World:
 
         if symbol == arcade.key.ESCAPE:
             arcade.close_window()
+
+    def on_mouse_motion(self,x,y):
+        if not self.dialog_status:
+            self.shield.center_x = x
+            self.shield.center_y = y
 
     def on_key_release(self, key, modifiers):
         # if key == arcade.key.UP:
