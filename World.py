@@ -42,7 +42,7 @@ class World:
         # Game level
         self.map = None
 
-        self.level = 200
+        self.level = 1
         #Physic engine
         self.physic = None
 
