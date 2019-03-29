@@ -42,7 +42,7 @@ class World:
         # Game level
         self.map = None
 
-        self.level = 10
+        self.level = 200
         #Physic engine
         self.physic = None
 
@@ -110,8 +110,8 @@ class World:
     @staticmethod
     def num_enemy(num):
         new_num = (num % 10)
-        if num / 10 >= 1 and num //10 == 0:
-            new_num += 1
+        if new_num == 0:
+            new_num = 10
         return new_num
 
     def on_draw(self):

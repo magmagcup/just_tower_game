@@ -9,7 +9,7 @@ class Menu:
 
 
     def __init__(self,width,height):
-        self.menu_pic = arcade.Sprite('pics/Shop/shop.jpg')
+        self.menu_pic = arcade.Sprite('pics/Shop/shop.png')
         self.menu_pic.center_x = 300
         self.menu_pic.center_y = 300
 
@@ -75,5 +75,6 @@ class Menu:
         elif self.num == 125 and self.BOX == self.height//5:
             self.health += 1
 
-
+        elif self.num == 125 + Box_space and self.BOX == self.height//5:
+            self.attack_delay = abs(self.attack_delay + 0.05)
 
