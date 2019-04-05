@@ -75,6 +75,7 @@ class Enemy(Model):
 
 
 class Player(Model):
+    MONEY = 50
     def __init__(self, filename,filename2, scale,pointx,pointy,attack,attack_delay_speed,life):
         super().__init__(filename,filename2,scale,pointx,pointy)
         # For checking
@@ -89,7 +90,8 @@ class Player(Model):
         self.life_time = time()
         #Attack_delay
         self.attack_delay = attack_delay_speed
-
+        #Money
+        self.money = Player.MONEY
         #life
         self.life = life
 

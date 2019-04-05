@@ -73,8 +73,13 @@ class Menu:
             self.finish_shop = True
 
         elif self.num == 125 and self.BOX == self.height//5:
+
             self.health += 1
 
         elif self.num == 125 + Box_space and self.BOX == self.height//5:
+
             self.attack_delay = abs(self.attack_delay + 0.05)
+
+    def decease_money(self,player):
+        pass
 

@@ -17,9 +17,9 @@ point_x = 50
 
 
 class World:
-    def __init__(self,x,y):
-        self.width = x
-        self.height = y
+    def __init__(self,width,height):
+        self.width = width
+        self.height = height
 
         # arcade.set_background_color(arcade.color.BLACK)
         self.player = None
@@ -161,9 +161,9 @@ class World:
         # Pretty long code
         if self.page_number == 1:
             # Dialog that will appear in the game
-            check = self.dialog.time_check(self.level)
-            if check is True:
-                self.dialog_status = check
+            # check = self.dialog.time_check(self.level)
+            # if check is True:
+            #     self.dialog_status = check
 
             if not self.dialog_status:
                 self.player.update()
