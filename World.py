@@ -53,12 +53,12 @@ class World:
         self.dialog_status = False
         self.skip_t = False
 
-        #Menu
-        self.menu = Menu(self.width,self.height)
-
         # Hurt
         self.hurt_status = False
         self.hurt_time = time()
+
+        #Money
+        self.MONEY = 50
 
 
         #ZA WADORU
@@ -70,13 +70,9 @@ class World:
         self.shield = Shield('pics/attack/slash.png',0.1,0,0)
 
     def setup_menu(self):
-        self.menu = Menu(self.width,self.height)
-
-
+        self.menu = Menu(self.width,self.height,self.MONEY)
 
     def setup(self):
-
-        #For shop
 
         # For Player
         self.player = Player("pics/character/pixel.png",'pics/character/pixel2.png', SCALE, point_x, point_y,
@@ -112,6 +108,9 @@ class World:
         self.physic = Physic()
         self.physic.add_physic(self.player,self.enemy_type,self.wall)
 
+        #For shop
+        self.menu.player_money = self.MONEY
+
     @staticmethod
     def num_enemy(num):
         new_num = (num % 10)
@@ -128,7 +127,7 @@ class World:
                 self.motion = randint(0, 2)
                 self.time_check = time()
             arcade.draw_texture_rectangle(self.pic[self.motion].center_x,self.pic[self.motion].center_y,
-                                          texture=self.pic[self.motion],height=600,width=800)
+                                          texture=self.pic[self.motion],height=700,width=900)
             arcade.draw_text('Press ENTER to start the game', 0, 100, arcade.color.AMETHYST, width=self.width,
                                  font_size=35)
 
@@ -143,6 +142,7 @@ class World:
             arcade.draw_text(f'The current level is {self.level}', self.width - 200, self.height - 100,
                                  arcade.color.WHITE)
             arcade.draw_text(f'Current life {self.player.life}', 100, self.height - 100,arcade.color.WHITE)
+            arcade.draw_text(f'Current Money {self.MONEY}', self.width//2 - 50,self.height -100,arcade.color.WHITE)
             self.shield.draw()
             if self.hurt_status:
                 arcade.draw_rectangle_outline(self.width//2,self.height//2,self.width,self.height,arcade.color.RED,10)
@@ -197,12 +197,14 @@ class World:
             kill_list = arcade.check_for_collision_with_list(self.player.at_pic, self.enemy_type)
         if kill_list:
             for enemy in kill_list:
+                self.MONEY += 10
                 enemy.kill()
                 self.time_stop = False
                 self.check_stop = True
             if len(self.enemy_type) == 0:
                 self.level += 1
                 if self.level % 10 == 0:
+                    self.menu.player_money = self.MONEY
                     self.page_number = -1
                     self.menu.finish_shop = False
                     return
@@ -221,6 +223,7 @@ class World:
 
         if self.player.life == 0:
             self.page_number = choice([0, 3])
+            self.MONEY = 50
             # self.page_number = 3
             if self.page_number == 3:
                 self.dialog_status = self.dialog.b_page(self.page_number)
@@ -246,6 +249,7 @@ class World:
         elif self.page_number == -1:
             self.menu.on_key_press(symbol)
             if self.menu.finish_shop:
+                self.MONEY = self.menu.player_money
                 self.page_number = 1
                 self.setup()
 

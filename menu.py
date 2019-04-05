@@ -3,12 +3,10 @@ import arcade
 Box_space = 250
 
 class Menu:
-    HEART = 50
-    ATTACK_DELAY = 100
+    Price = {'HEART':50,'ATTACK_DELAY':100}
     BOX_NUM = 125
 
-
-    def __init__(self,width,height):
+    def __init__(self,width,height,money):
         self.menu_pic = arcade.Sprite('pics/Shop/shop.png')
         self.menu_pic.center_x = 300
         self.menu_pic.center_y = 300
@@ -20,6 +18,7 @@ class Menu:
         self.BOX_DOW = height
         self.num = self.BOX_NUM
         self.finish_shop = False
+        self.player_money = money
 
         #Status
         self.health = 3
@@ -48,8 +47,12 @@ class Menu:
             arcade.draw_rectangle_filled(self.BOX_NUM + Box_space, self.height // 14, self.width // 3, self.height // 10,
                                          color=arcade.color.GRAY)
             arcade.draw_text('Go to the dungeon', 275, self.height // 14, arcade.color.BLACK)
+            arcade.draw_text(f'Current Money {self.player_money}', self.width//2 - 50,self.height -100,arcade.color.WHITE)
+
+
             arcade.draw_rectangle_outline(self.num, self.BOX, self.width // 3, self.height // 10,
                                           color=arcade.color.RED)
+
 
 
     def on_key_press(self, key):
@@ -73,13 +76,23 @@ class Menu:
             self.finish_shop = True
 
         elif self.num == 125 and self.BOX == self.height//5:
+            money_and_status = self.decease_money(Menu.Price['HEART'])
+            if money_and_status[0]:
+                self.health += 1
+                self.player_money = money_and_status[1]
 
-            self.health += 1
 
         elif self.num == 125 + Box_space and self.BOX == self.height//5:
+            money_and_status = self.decease_money(Menu.Price['ATTACK_DELAY'])
+            if money_and_status[0]:
+                self.attack_delay = abs(self.attack_delay + 0.05)
+                self.player_money = money_and_status[1]
 
-            self.attack_delay = abs(self.attack_delay + 0.05)
+    def decease_money(self,price):
+        money = self.player_money - price
+        status = True
+        if money <= -1:
+            status = False
+        return status,money
 
-    def decease_money(self,player):
-        pass
 
