@@ -103,12 +103,14 @@ class Player(Model):
 
     def attack(self,time_check):
         if self.attack_status:
+            self.at_pic.scale += 0.1
             #CONSTANT
             self.at_pic.explosion(self.center_x,self.center_y,self.facing_status)
             self.at_pic.draw()
 
         if time() - time_check >= self.attack_delay:
             self.attack_status = False
+            self.at_pic.scale = self.scale/9
 
     def update(self):
         self.center_x += self.change_x
