@@ -103,7 +103,9 @@ class Player(Model):
 
     def attack(self,time_check):
         if self.attack_status:
-            self.at_pic.scale += 0.1
+            #For 1.3.7
+            #self.at_pic.scale += 0.1
+            self.at_pic.scale += 0.01
             #CONSTANT
             self.at_pic.explosion(self.center_x,self.center_y,self.facing_status)
             self.at_pic.draw()
