@@ -1,7 +1,7 @@
 import arcade
 from time import time
 from random import randint,choice
-from model import Player,Enemy,Shield
+from model import Player,Enemy,Shield,BlueSlime
 from map import Map
 from dialog import Dialog
 from physic import Physic
@@ -84,8 +84,13 @@ class World:
         enemy_num = self.num_enemy(self.level)
 
         for monster in range(enemy_num):
-            slime = Enemy('pics/enemy/enemy.png','pics/enemy/enemy2.png', SCALE, randint(self.width // 2, self.width - 50), point_y)
-            self.enemy_type.append(slime)
+            enemy = randint(1,2)
+            if enemy == 1:
+                slime = Enemy('pics/enemy/enemy.png','pics/enemy/enemy2.png', SCALE, randint(self.width // 2, self.width - 50), point_y)
+                self.enemy_type.append(slime)
+            elif enemy == 2:
+                slime = BlueSlime('pics/enemy/enemy11.png','pics/enemy/enemy12.png', SCALE, randint(self.width // 2, self.width - 50), point_y)
+                self.enemy_type.append(slime)
 
         # For map
         self.map = Map(self.width, self.height, self.level,self.enemy_type)
@@ -169,11 +174,11 @@ class World:
                 self.player.update()
                 self.jumping()
                 self.shield.check_side(self.player.center_x,self.player.center_y)
-                self.deflect()
                 self.physic.update()
                 if not self.time_stop:
                     self.enemy_type.update()
                 self.check_boarder(self.enemy_type)
+                self.deflect()
                 self.check_die()
 
 
@@ -186,9 +191,12 @@ class World:
     def deflect(self):
         defect_list = arcade.check_for_collision_with_list(self.shield,self.enemy_type)
         for i in defect_list:
-            i.center_x += self.shield.width//2
-            i.change_x = -i.change_x
-            i.change_y = -i.change_y
+            if i.can_deflect:
+                i.center_x += self.shield.width//2
+                i.change_x = -i.change_x
+                i.change_y = -i.change_y
+            else:
+                i.center_x += i.change_x*self.shield.width//2
 
 
     def check_die(self):
@@ -197,10 +205,10 @@ class World:
             kill_list = arcade.check_for_collision_with_list(self.player.at_pic, self.enemy_type)
         if kill_list:
             for enemy in kill_list:
-                self.MONEY += 10
-                enemy.kill()
-                self.time_stop = False
-                self.check_stop = True
+                    self.MONEY += 10
+                    enemy.kill()
+                    self.time_stop = False
+                    self.check_stop = True
             if len(self.enemy_type) == 0:
                 self.level += 1
                 if self.level % 10 == 0:

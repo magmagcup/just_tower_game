@@ -42,6 +42,7 @@ class Enemy(Model):
 
         self.change_x = -randint(1,3)
         self.set_texture(self.LEFT)
+        self.can_deflect = True
 
     def boarder(self):
 
@@ -72,6 +73,11 @@ class Enemy(Model):
         self.center_x += self.change_x
         self.center_y += self.change_y
 
+
+class BlueSlime(Enemy):
+    def __init__(self, filename, filename2, scale, pointx, pointy):
+        super().__init__(filename, filename2, scale, pointx, pointy)
+        self.can_deflect = False
 
 
 class Player(Model):
