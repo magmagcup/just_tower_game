@@ -34,12 +34,14 @@ class World:
                     arcade.load_texture('pics/menu/menu3.png')]
         # For menu pic
         for each_pic in self.pic:
-            each_pic.center_x = self.width // 2
-            each_pic.center_y = self.height // 2
+            self.set_center(each_pic)
 
         self.bonus = arcade.Sprite('pics/game_over/game.png', scale=0.6)
         self.bonus.set_position(self.width // 2, self.height // 2)
 
+        #background
+        self.bg = arcade.load_texture('pics/bg.png')
+        self.set_center(self.bg)
         # Game level
         self.map = None
 
@@ -68,6 +70,10 @@ class World:
 
         #Shield
         self.shield = Shield('pics/attack/slash.png',0.1,0,0)
+
+    def set_center(self,file):
+        file.center_x = self.width // 2
+        file.center_y = self.height // 2
 
     def setup_menu(self):
         self.menu = Menu(self.width,self.height,self.MONEY)
@@ -133,13 +139,17 @@ class World:
                 self.time_check = time()
             arcade.draw_texture_rectangle(self.pic[self.motion].center_x,self.pic[self.motion].center_y,
                                           texture=self.pic[self.motion],height=700,width=900)
-            arcade.draw_text('Press ENTER to start the game', 0, 100, arcade.color.AMETHYST, width=self.width,
-                                 font_size=35)
+            #For 1.3.7
+            #arcade.draw_text('Press ENTER to start the game', 0, 100, arcade.color.AMETHYST, width=self.width,
+            #                    font_size=35)
+            arcade.draw_text('Press ENTER to start the game', 0, 100, arcade.color.AMETHYST, font_size=35)
 
         elif self.page_number == -1:
             self.menu.draw(self.dialog_status)
 
         elif self.page_number == 1:
+            arcade.draw_texture_rectangle(self.bg.center_x,self.bg.center_y,
+                                          texture=self.bg,height=600,width=800)
             self.player.draw()
             self.enemy_type.draw()
             self.player.attack(self.time_check)
@@ -178,9 +188,8 @@ class World:
                 if not self.time_stop:
                     self.enemy_type.update()
                 self.check_boarder(self.enemy_type)
-                self.deflect()
                 self.check_die()
-
+                self.update_physic()
 
 
     @staticmethod
@@ -196,29 +205,37 @@ class World:
                 i.change_x = -i.change_x
                 i.change_y = -i.change_y
             else:
-                i.center_x += i.change_x*self.shield.width//2
+                self.kill_enemy(i)
 
 
     def check_die(self):
+        self.deflect()
         kill_list = None
         if self.player.attack_status:
             kill_list = arcade.check_for_collision_with_list(self.player.at_pic, self.enemy_type)
         if kill_list:
             for enemy in kill_list:
-                    self.MONEY += 10
-                    enemy.kill()
-                    self.time_stop = False
-                    self.check_stop = True
-            if len(self.enemy_type) == 0:
-                self.level += 1
-                if self.level % 10 == 0:
-                    self.menu.player_money = self.MONEY
-                    self.page_number = -1
-                    self.menu.finish_shop = False
-                    return
-                else:
-                    self.setup()
-            self.physic.add_physic(self.player, self.enemy_type, self.wall)
+                if enemy.can_kill:
+                    self.kill_enemy(enemy)
+        if len(self.enemy_type) == 0:
+            self.level += 1
+            if self.level % 10 == 0:
+                self.menu.player_money = self.MONEY
+                self.page_number = -1
+                self.menu.finish_shop = False
+                return
+            else:
+                self.setup()
+        self.check_die_player()
+
+    def kill_enemy(self,enemy):
+        self.MONEY += 10
+        enemy.kill()
+        self.time_stop = False
+        self.check_stop = True
+
+
+    def check_die_player(self):
         status = arcade.check_for_collision_with_list(self.player, self.enemy_type)
 
         if status:
@@ -230,15 +247,22 @@ class World:
                 self.player.life_time = time()
 
         if self.player.life == 0:
-            self.page_number = choice([0, 3])
-            self.MONEY = 50
-            # self.page_number = 3
-            if self.page_number == 3:
-                self.dialog_status = self.dialog.b_page(self.page_number)
-            self.level = 1
-            self.skip_t = True
-            self.setup_menu()
-            self.setup()
+            self.reset_game()
+
+    def update_physic(self):
+        # Important
+        self.physic.add_physic(self.player, self.enemy_type, self.wall)
+
+    def reset_game(self):
+        self.page_number = choice([0, 3])
+        self.MONEY = 50
+        # self.page_number = 3
+        if self.page_number == 3:
+            self.dialog_status = self.dialog.b_page(self.page_number)
+        self.level = 1
+        self.skip_t = True
+        self.setup_menu()
+        self.setup()
 
     def jumping(self):
         for each in range(len(self.physic.physic_enemy)):
@@ -246,6 +270,9 @@ class World:
                 self.enemy_type[each].change_y = randint(5,10)
 
     #END OF UPDATE ZONE
+
+    def reset_motion(self):
+        self.player.still = time()
 
     def on_key_press(self, symbol: int, modifiers: int):
         if self.dialog_status:
@@ -279,6 +306,7 @@ class World:
             if symbol == arcade.key.UP:
                 if self.physic.physic_player.can_jump():
                     self.player.change_y = JUMP_SPEED
+                    self.reset_motion()
 
             if symbol == arcade.key.Z:
                 if not self.check_stop:
@@ -286,9 +314,14 @@ class World:
 
             if symbol == arcade.key.LEFT:
                 self.player.change_x = -SPRITE_SPEED
+                self.reset_motion()
 
             elif symbol == arcade.key.RIGHT:
                 self.player.change_x = SPRITE_SPEED
+                self.reset_motion()
+
+            if symbol == arcade.key.R:
+                self.reset_game()
 
         if symbol == arcade.key.ESCAPE:
             arcade.close_window()

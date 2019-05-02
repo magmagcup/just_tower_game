@@ -3,16 +3,9 @@ from time import time
 from random import randint
 from World import World
 
-SCREEN_WIDTH = 600
+SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = 'TOWER_GAME'
-SCALE = 1
-SPRITE_SPEED = 2
-JUMP_SPEED = 10
-JUMP_HEIGHT = 60
-#SPAWN POINT
-point_y = 75
-point_x = 50
 
 class GameMU(arcade.Window):
     def __init__(self,width,height,title):

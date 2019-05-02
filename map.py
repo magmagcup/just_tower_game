@@ -1,7 +1,7 @@
 import arcade
 from random import randint
 
-SCREEN_WIDTH = 600
+SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SPRITE_SIZE = 0.2
 

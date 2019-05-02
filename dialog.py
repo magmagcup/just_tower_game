@@ -2,7 +2,7 @@ import arcade
 from random import randint
 from time import time
 
-SCREEN_WIDTH = 600
+SCREEN_WIDTH = 800
 
 class Dialog(arcade.Sprite):
     def __init__(self, scale, pointx, pointy):
@@ -92,7 +92,7 @@ class Dialog(arcade.Sprite):
             arcade.draw_rectangle_filled(SCREEN_WIDTH//2 - 100,100,500,100,arcade.color.GRAY)
             self.set_texture(self.context[self.num_context][1])
             self.draw()
-            arcade.draw_text(self.context[self.num_context][0],0,100,arcade.color.WHITE,width=450,font_size=23)
+            arcade.draw_text(self.context[self.num_context][0],0,100,arcade.color.WHITE,font_size=20)
 
     def b_page(self,num):
         return self.b_dialog_0()

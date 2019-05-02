@@ -22,7 +22,7 @@ class Menu:
 
         #Status
         self.health = 3
-        self.attack_delay = 0.5
+        self.attack_delay = 0.05
 
 
     def draw(self,dialog_status):
@@ -85,7 +85,7 @@ class Menu:
         elif self.num == 125 + Box_space and self.BOX == self.height//5:
             money_and_status = self.decease_money(Menu.Price['ATTACK_DELAY'])
             if money_and_status[0]:
-                self.attack_delay = abs(self.attack_delay + 0.05)
+                self.attack_delay = abs(self.attack_delay + 0.005)
                 self.player_money = money_and_status[1]
 
     def decease_money(self,price):

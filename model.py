@@ -2,7 +2,7 @@ from time import time
 from random import randint
 import arcade
 
-SCREEN_WIDTH = 600
+SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 JUMP_HEIGHT = 60
 
@@ -12,17 +12,17 @@ class Model(arcade.Sprite):
     def __init__(self, filename, filename2,scale, pointx, pointy):
         super().__init__()
         #PIC
-        self.pic_left = arcade.load_texture(filename, mirrored=True, scale=scale)
-        self.textures.append(self.pic_left)
+        self.textures.append(arcade.load_texture(filename, mirrored=True, scale=scale))
         self.textures.append(arcade.load_texture(filename2, mirrored=True, scale=scale))
-        self.pic_right = arcade.load_texture(filename, scale=scale)
-        self.textures.append(self.pic_right)
+        self.textures.append(arcade.load_texture(filename, scale=scale))
         self.textures.append(arcade.load_texture(filename2, scale=scale))
 
-        self.RIGHT = 2
-        self.RIGHT_move = 3
-        self.LEFT = 0
-        self.LEFT_move = 1
+        self.direction = {'RIGHT':2,'RIGHT_move':3,'LEFT':0,'LEFT_move':1}
+
+        # self.RIGHT = 2
+        # self.RIGHT_move = 3
+        # self.LEFT = 0
+        # self.LEFT_move = 1
 
         self.center_x = pointx
         self.center_y = pointy
@@ -37,22 +37,22 @@ class Enemy(Model):
     def __init__(self, filename,filename2, scale, pointx,pointy):
         super().__init__(filename,filename2,scale,pointx,pointy)
         # For checking
-        self.facing_status = self.LEFT
-        self.set_texture(self.LEFT)
+        self.facing_status = self.direction['LEFT']
+        self.set_texture(self.direction['LEFT'])
 
         self.change_x = -randint(1,3)
-        self.set_texture(self.LEFT)
         self.can_deflect = True
+        self.can_kill = True
 
     def boarder(self):
 
         if self.change_x < 0:
-            self.set_texture(self.LEFT)
-            self.facing_status = self.LEFT
+            self.set_texture(self.direction['LEFT'])
+            self.facing_status = self.direction['LEFT']
 
         elif self.change_x > 0:
-            self.set_texture(self.RIGHT)
-            self.facing_status = self.RIGHT
+            self.set_texture(self.direction['RIGHT'])
+            self.facing_status = self.direction['RIGHT']
 
         if self.left < 0:
             self.change_x = 2
@@ -60,10 +60,10 @@ class Enemy(Model):
             self.change_x = -2
 
         if self.change_y == 0:
-            if self.facing_status == self.RIGHT:
-                self.set_texture(self.RIGHT_move)
+            if self.facing_status == self.direction['RIGHT']:
+                self.set_texture(self.direction['RIGHT_move'])
             else:
-                self.set_texture(self.LEFT_move)
+                self.set_texture(self.direction['LEFT_move'])
         #Constant
         if self.center_y <= 35:
             self.center_y = 60
@@ -78,6 +78,7 @@ class BlueSlime(Enemy):
     def __init__(self, filename, filename2, scale, pointx, pointy):
         super().__init__(filename, filename2, scale, pointx, pointy)
         self.can_deflect = False
+        self.can_kill = False
 
 
 class Player(Model):
@@ -85,8 +86,8 @@ class Player(Model):
     def __init__(self, filename,filename2, scale,pointx,pointy,attack,attack_delay_speed,life):
         super().__init__(filename,filename2,scale,pointx,pointy)
         # For checking
-        self.facing_status = self.RIGHT
-        self.set_texture(self.RIGHT)
+        self.facing_status = self.direction['RIGHT']
+        self.set_texture(self.direction['RIGHT'])
         #status for move
         self.attack_status = False
         #Attack sprite
@@ -99,7 +100,9 @@ class Player(Model):
         #Money
         #life
         self.life = life
-
+        #Movement
+        self.still = time()
+        self.motion_status = self.direction['RIGHT']
 
     def attack(self,time_check):
         if self.attack_status:
@@ -118,13 +121,33 @@ class Player(Model):
         self.center_x += self.change_x
         self.center_y += self.change_y
 
+        if time() - self.still >= 0.5:
+            motion = None
+            if self.motion_status == self.direction['LEFT']:
+                self.set_texture(self.direction['LEFT_move'])
+                motion = self.direction['LEFT_move']
+            elif self.motion_status == self.direction['LEFT_move']:
+                self.set_texture(self.direction['LEFT'])
+                motion = self.direction['LEFT']
+            elif self.motion_status == self.direction['RIGHT']:
+                self.set_texture(self.direction['RIGHT_move'])
+                motion = self.direction['RIGHT_move']
+            elif self.motion_status == self.direction['RIGHT_move']:
+                self.set_texture(self.direction['RIGHT'])
+                motion = self.direction['RIGHT']
+
+            self.motion_status = motion
+            self.still = time()
+
         if self.change_x < 0:
-            self.set_texture(self.LEFT_move)
-            self.facing_status = self.LEFT
+            self.set_texture(self.direction['LEFT_move'])
+            self.facing_status = self.direction['LEFT']
+            self.motion_status = self.direction['LEFT_move']
 
         elif self.change_x > 0:
-            self.set_texture(self.RIGHT_move)
-            self.facing_status = self.RIGHT
+            self.set_texture(self.direction['RIGHT_move'])
+            self.facing_status = self.direction['RIGHT']
+            self.motion_status = self.direction['RIGHT_move']
 
         if self.left < 0:
             self.left = 0
