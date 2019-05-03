@@ -64,8 +64,7 @@ class World:
 
 
         #ZA WADORU
-        self.time_stop = False
-        self.check_stop = False
+        self.hard_mode = False
 
 
         #Shield
@@ -108,10 +107,6 @@ class World:
         self.player.life_time = time()
         self.hurt_time = time()
 
-        #time stop
-        self.time_stop = False
-        self.check_stop = False
-
         # Status
         self.hurt_status = False
 
@@ -121,6 +116,9 @@ class World:
 
         #For shop
         self.menu.player_money = self.MONEY
+
+        #Mode
+        self.hard_mode = self.menu.mode
 
     @staticmethod
     def num_enemy(num):
@@ -155,9 +153,9 @@ class World:
             self.player.attack(self.time_check)
             self.map.map_component()
             arcade.draw_text(f'The current level is {self.level}', self.width - 200, self.height - 100,
-                                 arcade.color.WHITE)
-            arcade.draw_text(f'Current life {self.player.life}', 100, self.height - 100,arcade.color.WHITE)
-            arcade.draw_text(f'Current Money {self.MONEY}', self.width//2 - 50,self.height -100,arcade.color.WHITE)
+                                 arcade.color.BLACK)
+            arcade.draw_text(f'Current life {self.player.life}', 100, self.height - 100,arcade.color.BLACK)
+            arcade.draw_text(f'Current Money {self.MONEY}', self.width//2 - 50,self.height -100,arcade.color.BLACK)
             self.shield.draw()
             if self.hurt_status:
                 arcade.draw_rectangle_outline(self.width//2,self.height//2,self.width,self.height,arcade.color.RED,10)
@@ -185,8 +183,8 @@ class World:
                 self.jumping()
                 self.shield.check_side(self.player.center_x,self.player.center_y)
                 self.physic.update()
-                if not self.time_stop:
-                    self.enemy_type.update()
+                if self.hard_mode:
+                     self.enemy_type.update()
                 self.check_boarder(self.enemy_type)
                 self.check_die()
                 self.update_physic()
@@ -231,9 +229,6 @@ class World:
     def kill_enemy(self,enemy):
         self.MONEY += 10
         enemy.kill()
-        self.time_stop = False
-        self.check_stop = True
-
 
     def check_die_player(self):
         status = arcade.check_for_collision_with_list(self.player, self.enemy_type)
@@ -266,8 +261,12 @@ class World:
 
     def jumping(self):
         for each in range(len(self.physic.physic_enemy)):
-            if self.physic.physic_enemy[each].can_jump():
-                self.enemy_type[each].change_y = randint(5,10)
+            if self.enemy_type[each].want_to_jump:
+                if self.physic.physic_enemy[each].can_jump():
+                    self.enemy_type[each].change_y = randint(5,10)
+            else:
+                self.enemy_type[each].update()
+                self.enemy_type[each].change_y = 0.6
 
     #END OF UPDATE ZONE
 
@@ -307,10 +306,6 @@ class World:
                 if self.physic.physic_player.can_jump():
                     self.player.change_y = JUMP_SPEED
                     self.reset_motion()
-
-            if symbol == arcade.key.Z:
-                if not self.check_stop:
-                    self.time_stop = True
 
             if symbol == arcade.key.LEFT:
                 self.player.change_x = -SPRITE_SPEED

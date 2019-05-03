@@ -43,6 +43,7 @@ class Enemy(Model):
         self.change_x = -randint(1,3)
         self.can_deflect = True
         self.can_kill = True
+        self.want_to_jump = True
 
     def boarder(self):
 
