@@ -44,6 +44,7 @@ class Enemy(Model):
         self.can_deflect = True
         self.can_kill = True
         self.want_to_jump = True
+        self.change_y = 3
 
     def boarder(self):
 
@@ -68,7 +69,8 @@ class Enemy(Model):
         #Constant
         if self.center_y <= 35:
             self.center_y = 60
-
+        elif self.center_y >= 600:
+            self.change_y = -self.change_y
 
     def update(self):
         self.center_x += self.change_x
@@ -80,6 +82,16 @@ class BlueSlime(Enemy):
         super().__init__(filename, filename2, scale, pointx, pointy)
         self.can_deflect = False
         self.can_kill = False
+
+class YellowSlime(Enemy):
+    def __init__(self, filename, filename2, scale, pointx, pointy):
+        super().__init__(filename, filename2, scale, pointx, pointy)
+        self.can_deflect = True
+        self.want_to_jump = False
+
+        def update(self):
+            self.center_x += self.change_x
+            self.center_y += self.change_y
 
 
 class Player(Model):

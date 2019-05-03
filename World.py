@@ -1,7 +1,7 @@
 import arcade
 from time import time
 from random import randint,choice
-from model import Player,Enemy,Shield,BlueSlime
+from model import Player,Enemy,Shield,BlueSlime,YellowSlime
 from map import Map
 from dialog import Dialog
 from physic import Physic
@@ -89,13 +89,14 @@ class World:
         enemy_num = self.num_enemy(self.level)
 
         for monster in range(enemy_num):
-            enemy = randint(1,2)
+            enemy = randint(1,3)
             if enemy == 1:
                 slime = Enemy('pics/enemy/enemy.png','pics/enemy/enemy2.png', SCALE, randint(self.width // 2, self.width - 50), point_y)
-                self.enemy_type.append(slime)
             elif enemy == 2:
                 slime = BlueSlime('pics/enemy/enemy11.png','pics/enemy/enemy12.png', SCALE, randint(self.width // 2, self.width - 50), point_y)
-                self.enemy_type.append(slime)
+            elif enemy == 3:
+                slime = YellowSlime('pics/enemy/enemy2.png','pics/enemy/enemy.png', SCALE, randint(self.width // 2, self.width - 50), point_y)
+            self.enemy_type.append(slime)
 
         # For map
         self.map = Map(self.width, self.height, self.level,self.enemy_type)
@@ -141,6 +142,7 @@ class World:
             #arcade.draw_text('Press ENTER to start the game', 0, 100, arcade.color.AMETHYST, width=self.width,
             #                    font_size=35)
             arcade.draw_text('Press ENTER to start the game', 0, 100, arcade.color.AMETHYST, font_size=35)
+            arcade.draw_text('Just An Ordinary Dungeon Crawler game', 0, 200, arcade.color.GOLD_FUSION, font_size=50, width=3500)
 
         elif self.page_number == -1:
             self.menu.draw(self.dialog_status)
@@ -180,9 +182,10 @@ class World:
 
             if not self.dialog_status:
                 self.player.update()
-                self.jumping()
                 self.shield.check_side(self.player.center_x,self.player.center_y)
                 self.physic.update()
+                self.jumping()
+
                 if self.hard_mode:
                      self.enemy_type.update()
                 self.check_boarder(self.enemy_type)
@@ -265,8 +268,12 @@ class World:
                 if self.physic.physic_enemy[each].can_jump():
                     self.enemy_type[each].change_y = randint(5,10)
             else:
+                if self.enemy_type[each].change_y == 0:
+                    self.enemy_type[each].change_y = randint(1,2)
+                if not randint(0,20):
+                    self.enemy_type[each].change_y = -10
                 self.enemy_type[each].update()
-                self.enemy_type[each].change_y = 0.6
+
 
     #END OF UPDATE ZONE
 

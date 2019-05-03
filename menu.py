@@ -57,12 +57,12 @@ class Menu:
             arcade.draw_text('Something', Text_space_from_box, self.height // 14, arcade.color.BLACK)
 
             arcade.draw_rectangle_filled(self.BOX_NUM + 2*Box_space, self.height // 5, self.width // 3, self.height // 10,
-                                         color=arcade.color.GRAY)
+                                         color=arcade.color.BRONZE)
             arcade.draw_text('Change mode', Text_space_from_box*2, self.height // 5, arcade.color.BLACK)
 
 
             arcade.draw_rectangle_filled(self.BOX_NUM+ 2*Box_space, self.height // 14, self.width // 3, self.height // 10,
-                                         color=arcade.color.GRAY)
+                                         color=arcade.color.BRONZE)
             arcade.draw_text('Go to the dungeon', Text_space_from_box*2, self.height // 14, arcade.color.BLACK)
 
             arcade.draw_text(f'Current Money {self.player_money}', self.width//2 - 50,self.height -100,arcade.color.GOLD)

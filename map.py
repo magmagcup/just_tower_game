@@ -26,11 +26,11 @@ class Map:
             wall.center_x = x
             wall.center_y = 25
             self.wall_list.append(wall)
-        if choice == 0:
-            self.map1()
-        elif choice == 1:
-            self.map1()
-            self.map2()
+        # if choice == 0:
+        self.map1()
+        # elif choice == 1:
+        #     self.map1()
+        #     self.map2()
 
 
 
