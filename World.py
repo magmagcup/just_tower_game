@@ -30,14 +30,14 @@ class World:
         self.page_number = 0
         # For Character pic
         self.motion = 0
-        self.pic = [arcade.load_texture('pics/menu/menu1.png'), arcade.load_texture('pics/menu/menu2.png',),
-                    arcade.load_texture('pics/menu/menu3.png')]
-        # For menu pic
-        for each_pic in self.pic:
-            self.set_center(each_pic)
-
-        self.bonus = arcade.Sprite('pics/game_over/game.png', scale=0.6)
-        self.bonus.set_position(self.width // 2, self.height // 2)
+        # self.pic = [arcade.load_texture('pics/menu/menu1.png'), arcade.load_texture('pics/menu/menu2.png',),
+        #             arcade.load_texture('pics/menu/menu3.png')]
+        # # For menu pic
+        # for each_pic in self.pic:
+        #     self.set_center(each_pic)
+        #
+        # self.bonus = arcade.Sprite('pics/game_over/game.png', scale=0.6)
+        # self.bonus.set_position(self.width // 2, self.height // 2)
 
         #background
         self.bg = arcade.load_texture('pics/bg.png')
@@ -93,9 +93,9 @@ class World:
             if enemy == 1:
                 slime = Enemy('pics/enemy/enemy.png','pics/enemy/enemy2.png', SCALE, randint(self.width // 2, self.width - 50), point_y)
             elif enemy == 2:
-                slime = BlueSlime('pics/enemy/enemy11.png','pics/enemy/enemy12.png', SCALE, randint(self.width // 2, self.width - 50), point_y)
+                slime = BlueSlime('pics/enemy/enemyb1.png','pics/enemy/enemyb2.png', SCALE, randint(self.width // 2, self.width - 50), point_y)
             elif enemy == 3:
-                slime = YellowSlime('pics/enemy/enemy2.png','pics/enemy/enemy.png', SCALE, randint(self.width // 2, self.width - 50), point_y)
+                slime = YellowSlime('pics/enemy/enemyy1.png','pics/enemy/enemyy2.png', SCALE, randint(self.width // 2, self.width - 50), point_y)
             self.enemy_type.append(slime)
 
         # For map
@@ -136,8 +136,13 @@ class World:
             if time() - self.time_check >= 1:
                 self.motion = randint(0, 2)
                 self.time_check = time()
-            arcade.draw_texture_rectangle(self.pic[self.motion].center_x,self.pic[self.motion].center_y,
-                                          texture=self.pic[self.motion],height=700,width=900)
+            pic = [arcade.load_texture('pics/menu/menu1.png'), arcade.load_texture('pics/menu/menu2.png', ),
+                        arcade.load_texture('pics/menu/menu3.png')]
+            # For menu pic
+            for each_pic in pic:
+                self.set_center(each_pic)
+            arcade.draw_texture_rectangle(pic[self.motion].center_x,pic[self.motion].center_y,
+                                          texture=pic[self.motion],height=700,width=900)
             #For 1.3.7
             #arcade.draw_text('Press ENTER to start the game', 0, 100, arcade.color.AMETHYST, width=self.width,
             #                    font_size=35)
@@ -164,9 +169,20 @@ class World:
                 if time() - self.hurt_time >= 1.5:
                     self.hurt_status = False
 
-        elif self.page_number == 3:
-            self.bonus.draw()
+        elif self.page_number == -3 or self.page_number == -2:
+            tutorial = arcade.load_texture('pics/scene/t1.png')
+            if self.page_number == -2:
+                tutorial = arcade.load_texture('pics/scene/t2.png')
+            self.set_center(tutorial)
+            arcade.draw_texture_rectangle(tutorial.center_x,tutorial.center_y,
+                                          texture=tutorial, height=600, width=800)
 
+
+        elif self.page_number == 3:
+            bonus = arcade.load_texture('pics/game_over/game.png')
+            self.set_center(bonus)
+            arcade.draw_texture_rectangle(bonus.center_x,bonus.center_y,
+                                          texture=bonus, height=700, width=900)
         self.dialog.on_draw(self.dialog_status)
 
     #UPDATE_ZONE
@@ -282,10 +298,15 @@ class World:
 
     def on_key_press(self, symbol: int, modifiers: int):
         if self.dialog_status:
-                self.dialog.on_key_press(symbol,modifiers)
-                self.dialog_status = self.dialog.check()
-                if not self.dialog_status and self.page_number != -1:
-                    self.page_number = 1
+            self.dialog.on_key_press(symbol,modifiers)
+            self.dialog_status = self.dialog.check()
+            if self.page_number == -3 and self.dialog.num_context == 2:
+                self.page_number = -2
+            if -3 <= self.page_number <= -2 and self.dialog.context == None:
+                self.page_number = -1
+            if not self.dialog_status and self.page_number == 3:
+                self.page_number = 0
+
 
         elif self.page_number == -1:
             self.menu.on_key_press(symbol)
@@ -295,13 +316,21 @@ class World:
                 self.setup()
 
         elif self.page_number == 0:
+            if symbol == arcade.key.T:
+                self.skip_t = False
+                self.dialog.tutorial()
             if symbol == arcade.key.ENTER:
                 if not self.skip_t:
                     self.dialog_status = True
                     self.skip_t = True
-                self.page_number = -1
+                    self.page_number = -3
+                else:
+                    self.page_number = -1
                 self.setup_menu()
                 arcade.set_background_color(arcade.color.BLACK)
+
+
+
 
         elif self.page_number == 1:
             if symbol == arcade.key.X:

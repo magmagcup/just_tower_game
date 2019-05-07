@@ -70,13 +70,12 @@ class Dialog(arcade.Sprite):
         return True
 
     def time_check(self,level):
-        if level < 1:
+        if level <= 1:
             self.time_for_dialog = time()
         elif level > 1 and time() - self.time_for_dialog >= 40:
             self.context = self.dialog_dict[randint(0,2)]
             # self.context = self.dialog_dict[2]
             self.time_for_dialog = time()
-
             return True
         return None
 
