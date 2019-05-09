@@ -25,15 +25,10 @@ class Dialog(arcade.Sprite):
 
 
     def tutorial(self):
-        self.context = [("Hello and welcome to the tutorial of the game.",1),
-        ("My name is viola a former magician who serve this country for about...",2),
-        ("Hmm? We don't need a back story yet?",0),
-                        ("Well... Just ignore what I said earlier.",3),
-                        ("Ahem Let's me teach you about the basic control.",1),
-                        ("Press x to attack",1),
-                        ("Move with keys pad",0),
-                        ("Hm... I think that's all",3),
-                        ("Enjoy the game!",1),
+        self.context = [("Welcome to the game!.",1),
+        ('Please read "How To Play" page before you proceed.',1),
+        ('...',0),("Wait... we have 2 instruction pages?",3),
+        ("...",2),("Errrr",1),('Please read "How To Play" page before you proceed!',1)
                         ]
 
     #For dialog
@@ -43,13 +38,10 @@ class Dialog(arcade.Sprite):
             ,("But worry not! You will see me in---",-1),('Just ignore him.',2)]
     @staticmethod
     def dialog_1():
-        return [("Ouch my feet hurt...",1),("Obviously! Who can jump that high without hurting their feet!",-1),('Mario?',3),('I mean a real person...',-1)]
+        return [(".",0),("..",0),("...",0),('Oh! Sorry look like I forgot to turn off dialog status.',1)]
     @staticmethod
     def dialog_2():
-        return [("Wait a minute.",-1),('Hm what wrong?',1),
-                ('After some consideration about mario jumping I came up with this conclusion.',-1),
-                ("What if Mario feet really hurt but he can't express his pain?",-1),
-                ('...',0),('...',1),("...Let's hope not",3)]
+        return [('Disclaimer! Art for an entire game is made by HIM!',2),('*Point toward the screen*',2),('I point at the wrong person sorry...',3)]
 
 
 
@@ -88,7 +80,7 @@ class Dialog(arcade.Sprite):
 
     def on_draw(self,status):
         if self.context is not None and status:
-            arcade.draw_rectangle_filled(SCREEN_WIDTH//2 - 100,100,500,100,arcade.color.GRAY)
+            arcade.draw_rectangle_filled(SCREEN_WIDTH//2,100,800,100,arcade.color.GRAY)
             self.set_texture(self.context[self.num_context][1])
             self.draw()
             arcade.draw_text(self.context[self.num_context][0],0,100,arcade.color.WHITE,font_size=20)

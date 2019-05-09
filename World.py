@@ -1,7 +1,7 @@
 import arcade
 from time import time
 from random import randint,choice
-from model import Player,Enemy,Shield,BlueSlime,YellowSlime
+from model import Player,Enemy,Shield,BlueSlime,YellowSlime,RedSlime
 from map import Map
 from dialog import Dialog
 from physic import Physic
@@ -30,43 +30,27 @@ class World:
         self.page_number = 0
         # For Character pic
         self.motion = 0
-        # self.pic = [arcade.load_texture('pics/menu/menu1.png'), arcade.load_texture('pics/menu/menu2.png',),
-        #             arcade.load_texture('pics/menu/menu3.png')]
-        # # For menu pic
-        # for each_pic in self.pic:
-        #     self.set_center(each_pic)
-        #
-        # self.bonus = arcade.Sprite('pics/game_over/game.png', scale=0.6)
-        # self.bonus.set_position(self.width // 2, self.height // 2)
 
         #background
         self.bg = arcade.load_texture('pics/bg.png')
         self.set_center(self.bg)
         # Game level
         self.map = None
-
         self.level = 1
         #Physic engine
         self.physic = None
-
         # Dialog
         self.dialog = Dialog(SCALE / 1.5, self.width - 50, (self.height // 5) - 10)
         #Kinda confuse cause I mean it first a fault for set up.
         self.dialog_status = False
         self.skip_t = False
-
         # Hurt
         self.hurt_status = False
         self.hurt_time = time()
-
         #Money
         self.MONEY = 50
-
-
         #ZA WADORU
         self.hard_mode = False
-
-
         #Shield
         self.shield = Shield('pics/attack/slash.png',0.1,0,0)
 
@@ -89,13 +73,19 @@ class World:
         enemy_num = self.num_enemy(self.level)
 
         for monster in range(enemy_num):
-            enemy = randint(1,3)
-            if enemy == 1:
-                slime = Enemy('pics/enemy/enemy.png','pics/enemy/enemy2.png', SCALE, randint(self.width // 2, self.width - 50), point_y)
-            elif enemy == 2:
-                slime = BlueSlime('pics/enemy/enemyb1.png','pics/enemy/enemyb2.png', SCALE, randint(self.width // 2, self.width - 50), point_y)
-            elif enemy == 3:
+
+            enemy = randint(1,30)
+
+            if enemy > 25:
+                slime = RedSlime('pics/enemy/enemyr1.png','pics/enemy/enemyr2.png', SCALE, randint(self.width // 2, self.width - 50), point_y)
+            elif enemy >= 19:
                 slime = YellowSlime('pics/enemy/enemyy1.png','pics/enemy/enemyy2.png', SCALE, randint(self.width // 2, self.width - 50), point_y)
+            elif enemy > 10:
+                slime = BlueSlime('pics/enemy/enemyb1.png','pics/enemy/enemyb2.png', SCALE, randint(self.width // 2, self.width - 50), point_y)
+            elif enemy >= 1:
+                slime = Enemy('pics/enemy/enemy.png', 'pics/enemy/enemy2.png', SCALE,
+                          randint(self.width // 2, self.width - 50), point_y)
+
             self.enemy_type.append(slime)
 
         # For map
@@ -103,8 +93,8 @@ class World:
         self.map.reset(self.player)
         self.wall = self.map.wall_list
 
-        # For Time
-        self.time_check = -2
+        # For Invicible peraid
+        self.time_check = 0
         self.player.life_time = time()
         self.hurt_time = time()
 
@@ -150,7 +140,7 @@ class World:
             arcade.draw_text('Just An Ordinary Dungeon Crawler game', 0, 200, arcade.color.GOLD_FUSION, font_size=50, width=3500)
 
         elif self.page_number == -1:
-            self.menu.draw(self.dialog_status)
+            self.menu.draw()
 
         elif self.page_number == 1:
             arcade.draw_texture_rectangle(self.bg.center_x,self.bg.center_y,
@@ -170,9 +160,9 @@ class World:
                     self.hurt_status = False
 
         elif self.page_number == -3 or self.page_number == -2:
-            tutorial = arcade.load_texture('pics/scene/t1.png')
+            tutorial = arcade.load_texture('pics/scene/t2.png')
             if self.page_number == -2:
-                tutorial = arcade.load_texture('pics/scene/t2.png')
+                tutorial = arcade.load_texture('pics/scene/t1.png')
             self.set_center(tutorial)
             arcade.draw_texture_rectangle(tutorial.center_x,tutorial.center_y,
                                           texture=tutorial, height=600, width=800)
@@ -188,26 +178,24 @@ class World:
     #UPDATE_ZONE
 
     def update(self, delta_time: float):
-
         # Pretty long code
         if self.page_number == 1:
             # Dialog that will appear in the game
-            # check = self.dialog.time_check(self.level)
-            # if check is True:
-            #     self.dialog_status = check
-
+            check = self.dialog.time_check(self.level)
+            if check is True:
+                self.dialog_status = check
             if not self.dialog_status:
                 self.player.update()
                 self.shield.check_side(self.player.center_x,self.player.center_y)
                 self.physic.update()
                 self.jumping()
-
                 if self.hard_mode:
                      self.enemy_type.update()
                 self.check_boarder(self.enemy_type)
                 self.check_die()
                 self.update_physic()
-
+        elif self.page_number == -1:
+            self.menu.update()
 
     @staticmethod
     def check_boarder(wat_want):
@@ -222,7 +210,11 @@ class World:
                 i.change_x = -i.change_x
                 i.change_y = -i.change_y
             else:
-                self.kill_enemy(i)
+                if i.can_teleport:
+                    i.center_x = self.player.center_x
+                    i.center_y = self.player.center_y
+                else:
+                    self.kill_enemy(i)
 
 
     def check_die(self):
@@ -290,7 +282,6 @@ class World:
                     self.enemy_type[each].change_y = -10
                 self.enemy_type[each].update()
 
-
     #END OF UPDATE ZONE
 
     def reset_motion(self):
@@ -328,9 +319,6 @@ class World:
                     self.page_number = -1
                 self.setup_menu()
                 arcade.set_background_color(arcade.color.BLACK)
-
-
-
 
         elif self.page_number == 1:
             if symbol == arcade.key.X:
