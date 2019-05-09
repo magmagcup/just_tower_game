@@ -321,7 +321,7 @@ class World:
                 arcade.set_background_color(arcade.color.BLACK)
 
         elif self.page_number == 1:
-            if symbol == arcade.key.X:
+            if symbol == arcade.key.X or symbol == arcade.key.KEY_0:
                 if time() - self.time_check >= 1:
                     self.player.attack_status = True
                     self.time_check = time()

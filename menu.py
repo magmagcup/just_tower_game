@@ -36,6 +36,8 @@ class Menu:
         self.health = 3
         self.attack_delay = 0.05
 
+        self.call_time = 0
+
     @staticmethod
     def set_pic_point(picture,x,y):
         for pic in picture:
@@ -100,9 +102,11 @@ class Menu:
                                       color=arcade.color.RED)
 
     def update(self):
-        for move in self.moving:
-            self.update_p(move)
-
+        if self.call_time >= 2:
+            self.call_time = 0
+            for move in self.moving:
+                self.update_p(move)
+        self.call_time += 1
     def update_p(self,object_m):
         object_m.center_x -= object_m.change_x
         object_m.center_y += sin(object_m.center_x)*object_m.change_y
