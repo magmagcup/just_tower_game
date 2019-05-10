@@ -23,11 +23,12 @@ class Dialog(arcade.Sprite):
 
 
 
-
     def tutorial(self):
         self.context = [("Welcome to the game!.",1),
         ('Please read "How To Play" page before you proceed.',1),
-        ('*Addition: You can use 0 in numpad to attack', 1),('...',0),("Wait... we have 2 instruction pages?",3),
+        ('*Addition: You can use 0 in numpad to attack', 1),
+        ('*Addition: To read how to play agian press "T" at "Press Enter To Start the game page"', 1),
+        ('...',0),("Wait... we have 2 instruction pages?",3),
         ("...",2),("Errrr",1),('Please read "How To Play" page before you proceed!',1)]
 
     #For dialog

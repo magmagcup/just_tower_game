@@ -5,7 +5,7 @@ from World import World
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-SCREEN_TITLE = 'TOWER_GAME'
+SCREEN_TITLE = 'Just An Ordinary Dungeon Clawer game'
 
 class GameMU(arcade.Window):
     def __init__(self,width,height,title):

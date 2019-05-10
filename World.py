@@ -291,7 +291,7 @@ class World:
         if self.dialog_status:
             self.dialog.on_key_press(symbol,modifiers)
             self.dialog_status = self.dialog.check()
-            if self.page_number == -3 and self.dialog.num_context == 2:
+            if self.page_number == -3 and self.dialog.num_context == 4:
                 self.page_number = -2
             if -3 <= self.page_number <= -2 and self.dialog.context == None:
                 self.page_number = -1

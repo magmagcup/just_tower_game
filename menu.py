@@ -72,7 +72,7 @@ class Menu:
 
         arcade.draw_rectangle_filled(self.BOX_NUM, self.height // 5, self.width // 3, self.height // 10,
                                      color=arcade.color.GRAY)
-        arcade.draw_text('Health', 25, self.height // 5, arcade.color.BLACK)
+        arcade.draw_text(f'Health :{Menu.Price["HEART"]}', 25, self.height // 5, arcade.color.BLACK)
 
         # arcade.draw_rectangle_filled(self.BOX_NUM, self.height // 14, self.width // 3, self.height // 10,
         #                              color=arcade.color.GRAY)
@@ -80,7 +80,7 @@ class Menu:
 
         arcade.draw_rectangle_filled(self.BOX_NUM + Box_space, self.height // 5, self.width // 3, self.height // 10,
                                      color=arcade.color.GRAY)
-        arcade.draw_text('Attack delay', Text_space_from_box, self.height // 5, arcade.color.BLACK)
+        arcade.draw_text(f"Attack delay :{Menu.Price['ATTACK_DELAY']}", Text_space_from_box, self.height // 5, arcade.color.BLACK)
 
         # arcade.draw_rectangle_filled(self.BOX_NUM + Box_space, self.height // 14, self.width // 3, self.height // 10,
         #                              color=arcade.color.GRAY)
